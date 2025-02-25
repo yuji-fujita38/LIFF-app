@@ -59,15 +59,12 @@ async function initializeLIFF() {
 // ✅ GASにLINE IDと名前を送信する関数（CORS対策済み）
 async function sendToGAS(userId, displayName) {
     try {
-        console.log("GASへデータ送信中...");
+        console.log("GASへデータ送信中...", userId, displayName);
+        
         const response = await fetch(GAS_URL, {
             method: "POST",
-            headers: { 
-                "Content-Type": "application/json"
-            },
+            headers: { "Content-Type": "text/plain" },  // ✅ 変更点: application/json → text/plain
             body: JSON.stringify({ userId, displayName }),
-            mode: "cors",  // ✅ 明示的にCORS許可
-            cache: "no-cache"
         });
 
         if (!response.ok) {
@@ -77,13 +74,13 @@ async function sendToGAS(userId, displayName) {
         const result = await response.json();
         console.log("GASのレスポンス:", result);
 
-        // ✅ 成功した場合の表示
         alert("LINE IDを登録しました！");
     } catch (error) {
         console.error("GAS送信エラー:", error);
         alert("GASへの送信に失敗しました。");
     }
 }
+
 
 
 
