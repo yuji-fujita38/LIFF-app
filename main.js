@@ -1,6 +1,9 @@
 import './style.css';
 import liff from '@line/liff';
 
+// ✅ GASのエンドポイントURLを設定（システム設定スプレッドシートのGAS）
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzO1SkNr9s-iTZTVJ8DEn7oeGlkSLlvAQQ8-nB3ztmcuzkrMHNcpwyWdNmhlZWFgMnO/exec";
+
 // ✅ URLパラメータを取得する関数
 function getUrlParams() {
     const params = new URLSearchParams(window.location.search);
@@ -40,6 +43,9 @@ async function initializeLIFF() {
           <p>ようこそ、<b>${profile.displayName}</b> さん！</p>
           <p>LINE ID: <code>${profile.userId}</code></p>
         `;
+
+        // ✅ システム設定のGASに送信
+        sendToGAS(profile.userId, profile.displayName);
     } catch (error) {
         console.error("LIFFの初期化に失敗:", error);
         document.querySelector('#app').innerHTML = `
@@ -47,6 +53,22 @@ async function initializeLIFF() {
           <p>LIFF init failed.</p>
           <p><code>${error}</code></p>
         `;
+    }
+}
+
+// ✅ GASにLINE IDと名前を送信する関数
+async function sendToGAS(userId, displayName) {
+    try {
+        const response = await fetch(GAS_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId, displayName })
+        });
+
+        const result = await response.text();
+        console.log("GASのレスポンス:", result);
+    } catch (error) {
+        console.error("GAS送信エラー:", error);
     }
 }
 
