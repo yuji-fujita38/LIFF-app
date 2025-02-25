@@ -51,11 +51,8 @@ async function initializeLIFF() {
             console.log("LIFFアプリを閉じます...");
             liff.closeWindow();
         }, 100); // 0.5秒後に閉じる（即時でもOK）
-
-        // ✅ **3 秒後にスプレッドシートに ID を登録**
-        setTimeout(() => {
+     
             sendToGAS(userId, displayName, userType);
-        }, 10000); // 3秒後に送信
     } catch (error) {
         console.error("LIFFの初期化に失敗:", error);
     }
