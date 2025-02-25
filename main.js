@@ -60,11 +60,19 @@ async function initializeLIFF() {
 async function sendToGAS(userId, displayName) {
     try {
         console.log("GASへデータ送信中...", userId, displayName);
-        
+
+        // ✅ `application/x-www-form-urlencoded` にするために `URLSearchParams` を使用
+        const formData = new URLSearchParams();
+        formData.append("userId", userId);
+        formData.append("displayName", displayName);
+
         const response = await fetch(GAS_URL, {
             method: "POST",
-            headers: { "Content-Type": "text/plain" },  // ✅ 変更点: application/json → text/plain
-            body: JSON.stringify({ userId, displayName }),
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded", // ✅ プリフライト回避
+                "Accept": "application/json", // ✅ レスポンスを JSON で受け取る
+            },
+            body: formData.toString(),
         });
 
         if (!response.ok) {
@@ -80,6 +88,7 @@ async function sendToGAS(userId, displayName) {
         alert("GASへの送信に失敗しました。");
     }
 }
+
 
 
 
