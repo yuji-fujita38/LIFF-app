@@ -22,6 +22,9 @@ async function initializeLIFF() {
         const urlParams = getUrlParams();
         console.log("取得したURLパラメータ:", urlParams);
 
+        // ✅ デフォルトは顧客登録（client）とし、URLで `type=coach` の場合はコーチ登録に切り替える
+        const userType = urlParams.type || "client"; 
+
         // ✅ ログインしていなければログイン処理を行う
         if (!liff.isLoggedIn()) {
             console.log("LINEログインが必要です");
@@ -38,14 +41,14 @@ async function initializeLIFF() {
 
         // ✅ IDをHTMLに表示
         document.querySelector('#app').innerHTML = `
-          <h1>LIFFアプリ</h1>
-          <p>LIFF init succeeded.</p>
+          <h1>ボディメイクナビ</h1>
           <p>ようこそ、<b>${profile.displayName}</b> さん！</p>
-          <p>LINE ID: <code>${profile.userId}</code></p>
+          <p>アカウント登録中です。ページを閉じないでください。</p>
+          <p>登録種別: <b>${userType === "coach" ? "コーチ" : "クライアント"}</b></p>
         `;
 
         // ✅ システム設定のGASに送信
-        await sendToGAS(profile.userId, profile.displayName);
+        await sendToGAS(profile.userId, profile.displayName, userType);
     } catch (error) {
         console.error("LIFFの初期化に失敗:", error);
         document.querySelector('#app').innerHTML = `
@@ -57,14 +60,15 @@ async function initializeLIFF() {
 }
 
 // ✅ GASにLINE IDと名前を送信する関数（CORS対策済み）
-async function sendToGAS(userId, displayName) {
+async function sendToGAS(userId, displayName, userType) {
     try {
-        console.log("GASへデータ送信中...", userId, displayName);
+        console.log("GASへデータ送信中...", userId, displayName, userType);
 
         // ✅ `application/x-www-form-urlencoded` にするために `URLSearchParams` を使用
         const formData = new URLSearchParams();
         formData.append("userId", userId);
         formData.append("displayName", displayName);
+        formData.append("type", userType); // ✅ 顧客 or コーチ の判別情報を追加
 
         const response = await fetch(GAS_URL, {
             method: "POST",
@@ -82,16 +86,12 @@ async function sendToGAS(userId, displayName) {
         const result = await response.json();
         console.log("GASのレスポンス:", result);
 
-        alert("LINE IDを登録しました！");
+        alert(`「${userType === "coach" ? "コーチ" : "クライアント"}」登録が完了しました。ページを閉じてください！`);
     } catch (error) {
         console.error("GAS送信エラー:", error);
         alert("GASへの送信に失敗しました。");
     }
 }
-
-
-
-
 
 // ✅ 初期化関数を実行
 initializeLIFF();
