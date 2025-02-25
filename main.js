@@ -2,7 +2,7 @@ import './style.css';
 import liff from '@line/liff';
 
 // ✅ GASのエンドポイントURL（環境変数などで管理推奨）
-const GAS_URL = "https://script.google.com/macros/s/AKfycbzO1SkNr9s-iTZTVJ8DEn7oeGlkSLlvAQQ8-nB3ztmcuzkrMHNcpwyWdNmhlZWFgMnO/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbw3RriSKdaLpYutaVJeu69OXVPb7ntCCZikVra8jkKrfLygSboBPCHeGIRYZxbFfCqa/exec";
 
 // ✅ URLパラメータを取得する関数
 function getUrlParams() {
@@ -84,6 +84,7 @@ async function sendToGAS(userId, displayName) {
         alert("GASへの送信に失敗しました。");
     }
 }
+
 
 
 // ✅ 初期化関数を実行
