@@ -11,7 +11,7 @@ function getUrlParams() {
 async function initializeLIFF() {
     try {
         console.log("LIFFの初期化を開始...");
-        await liff.init({ liffId: import.meta.env.VITE_LIFF_ID });
+        await liff.init({ liffId: "2006759470-npBm9Mxr" });
 
         console.log("LIFF初期化成功！");
 
