@@ -51,7 +51,6 @@ async function initializeLIFF() {
         document.querySelector('#app').innerHTML = `
           <h1>ボディメイクナビ</h1>
           <p>ようこそ、<b>${displayName}</b> さん！</p>
-          <p>アカウント登録中です。ページを閉じないでください。</p>
           <p>登録種別: <b>${userType === "coach" ? "コーチ" : "クライアント"}</b></p>
         `;
 
