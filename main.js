@@ -55,7 +55,7 @@ async function initializeLIFF() {
         // ✅ **3 秒後にスプレッドシートに ID を登録**
         setTimeout(() => {
             sendToGAS(userId, displayName, userType);
-        }, 3000); // 3秒後に送信
+        }, 5000); // 3秒後に送信
     } catch (error) {
         console.error("LIFFの初期化に失敗:", error);
     }
