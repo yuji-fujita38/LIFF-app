@@ -4,6 +4,10 @@ import liff from '@line/liff';
 // ✅ GASのエンドポイントURL（環境変数などで管理推奨）
 const GAS_URL = "https://script.google.com/macros/s/AKfycbw3RriSKdaLpYutaVJeu69OXVPb7ntCCZikVra8jkKrfLygSboBPCHeGIRYZxbFfCqa/exec";
 
+let userId = null;
+let displayName = null;
+let userType = "client"; // デフォルトは顧客
+
 // ✅ URLパラメータを取得する関数
 function getUrlParams() {
     const params = new URLSearchParams(window.location.search);
@@ -22,32 +26,36 @@ async function initializeLIFF() {
         const urlParams = getUrlParams();
         console.log("取得したURLパラメータ:", urlParams);
 
-        // ✅ デフォルトは顧客登録（client）、URLで `type=coach` の場合はコーチ登録
-        const userType = urlParams.type || "client"; 
+        // ✅ URLパラメータで `type=coach` の場合はコーチ登録、それ以外はクライアント登録
+        userType = urlParams.type || "client";
 
         // ✅ ログインしていなければログイン処理を行う
         if (!liff.isLoggedIn()) {
             console.log("LINEログインが必要です");
             liff.login();
-            return; // ✅ ログイン処理後に処理を止める
+            return;
         }
 
         console.log("ログイン済み！ユーザー情報を取得します");
 
         // ✅ ユーザー情報を取得
         const profile = await liff.getProfile();
-        console.log("ユーザーID:", profile.userId);
-        console.log("表示名:", profile.displayName);
+        userId = profile.userId;
+        displayName = profile.displayName;
 
-        // ✅ **データ送信をバックグラウンドで実行**
-        sendToGAS(profile.userId, profile.displayName, userType);
+        console.log("ユーザーID:", userId);
+        console.log("表示名:", displayName);
 
         // ✅ **開いた瞬間に閉じる**
         setTimeout(() => {
             console.log("LIFFアプリを閉じます...");
             liff.closeWindow();
-        }, 500); // 0.5秒後に閉じる（即時でもOK）
-        
+        }, 100); // 0.5秒後に閉じる（即時でもOK）
+
+        // ✅ **3 秒後にスプレッドシートに ID を登録**
+        setTimeout(() => {
+            sendToGAS(userId, displayName, userType);
+        }, 3000); // 3秒後に送信
     } catch (error) {
         console.error("LIFFの初期化に失敗:", error);
     }
@@ -56,19 +64,18 @@ async function initializeLIFF() {
 // ✅ GASにLINE IDと名前を送信する関数（バックグラウンド処理）
 async function sendToGAS(userId, displayName, userType) {
     try {
-        console.log("GASへデータ送信中...", userId, displayName, userType);
+        console.log("3秒後にGASへデータ送信中...", userId, displayName, userType);
 
-        // ✅ `application/x-www-form-urlencoded` にするために `URLSearchParams` を使用
         const formData = new URLSearchParams();
         formData.append("userId", userId);
         formData.append("displayName", displayName);
-        formData.append("type", userType); // ✅ 顧客 or コーチ の判別情報を追加
+        formData.append("type", userType);
 
         const response = await fetch(GAS_URL, {
             method: "POST",
             headers: {
-                "Content-Type": "application/x-www-form-urlencoded", // ✅ プリフライト回避
-                "Accept": "application/json", // ✅ レスポンスを JSON で受け取る
+                "Content-Type": "application/x-www-form-urlencoded",
+                "Accept": "application/json",
             },
             body: formData.toString(),
         });
