@@ -4,6 +4,11 @@ import liff from '@line/liff';
 // ✅ GASのエンドポイントURL（環境変数などで管理推奨）
 const GAS_URL = "https://script.google.com/macros/s/AKfycbw3RriSKdaLpYutaVJeu69OXVPb7ntCCZikVra8jkKrfLygSboBPCHeGIRYZxbFfCqa/exec";
 
+// ✅ グローバル変数（ページ閉じる前に `sendBeacon()` で利用）
+let userId = null;
+let displayName = null;
+let userType = "client"; // デフォルトは顧客
+
 // ✅ URLパラメータを取得する関数
 function getUrlParams() {
     const params = new URLSearchParams(window.location.search);
@@ -22,8 +27,8 @@ async function initializeLIFF() {
         const urlParams = getUrlParams();
         console.log("取得したURLパラメータ:", urlParams);
 
-        // ✅ デフォルトは顧客登録（client）とし、URLで `type=coach` の場合はコーチ登録に切り替える
-        const userType = urlParams.type || "client"; 
+        // ✅ URLパラメータで `type=coach` の場合はコーチ登録、それ以外はクライアント登録
+        userType = urlParams.type || "client"; 
 
         // ✅ ログインしていなければログイン処理を行う
         if (!liff.isLoggedIn()) {
@@ -36,19 +41,22 @@ async function initializeLIFF() {
 
         // ✅ ユーザー情報を取得
         const profile = await liff.getProfile();
-        console.log("ユーザーID:", profile.userId);
-        console.log("表示名:", profile.displayName);
+        userId = profile.userId;
+        displayName = profile.displayName;
 
-        // ✅ IDをHTMLに表示
+        console.log("ユーザーID:", userId);
+        console.log("表示名:", displayName);
+
+        // ✅ UI 更新
         document.querySelector('#app').innerHTML = `
           <h1>ボディメイクナビ</h1>
-          <p>ようこそ、<b>${profile.displayName}</b> さん！</p>
+          <p>ようこそ、<b>${displayName}</b> さん！</p>
           <p>アカウント登録中です。ページを閉じないでください。</p>
           <p>登録種別: <b>${userType === "coach" ? "コーチ" : "クライアント"}</b></p>
         `;
 
         // ✅ システム設定のGASに送信
-        await sendToGAS(profile.userId, profile.displayName, userType);
+        await sendToGAS(userId, displayName, userType);
     } catch (error) {
         console.error("LIFFの初期化に失敗:", error);
         document.querySelector('#app').innerHTML = `
@@ -77,6 +85,7 @@ async function sendToGAS(userId, displayName, userType) {
                 "Accept": "application/json", // ✅ レスポンスを JSON で受け取る
             },
             body: formData.toString(),
+            keepalive: true // ✅ ページ閉じてもリクエスト継続
         });
 
         if (!response.ok) {
@@ -92,6 +101,19 @@ async function sendToGAS(userId, displayName, userType) {
         alert("GASへの送信に失敗しました。");
     }
 }
+
+// ✅ ユーザーがページを閉じる直前に `sendBeacon` で最終送信
+window.addEventListener("visibilitychange", function () {
+    if (document.visibilityState === "hidden" && userId && displayName) {
+        const formData = new URLSearchParams();
+        formData.append("userId", userId);
+        formData.append("displayName", displayName);
+        formData.append("type", userType);
+
+        console.log("🔄 ページ閉じる前に `sendBeacon()` で最終送信");
+        navigator.sendBeacon(GAS_URL, formData);
+    }
+});
 
 // ✅ 初期化関数を実行
 initializeLIFF();
