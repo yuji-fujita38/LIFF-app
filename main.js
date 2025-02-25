@@ -1,7 +1,7 @@
 import './style.css';
 import liff from '@line/liff';
 
-// ✅ GASのエンドポイントURLを設定（システム設定スプレッドシートのGAS）
+// ✅ GASのエンドポイントURL（環境変数などで管理推奨）
 const GAS_URL = "https://script.google.com/macros/s/AKfycbzO1SkNr9s-iTZTVJ8DEn7oeGlkSLlvAQQ8-nB3ztmcuzkrMHNcpwyWdNmhlZWFgMnO/exec";
 
 // ✅ URLパラメータを取得する関数
@@ -45,30 +45,41 @@ async function initializeLIFF() {
         `;
 
         // ✅ システム設定のGASに送信
-        sendToGAS(profile.userId, profile.displayName);
+        await sendToGAS(profile.userId, profile.displayName);
     } catch (error) {
         console.error("LIFFの初期化に失敗:", error);
         document.querySelector('#app').innerHTML = `
           <h1>LIFFアプリ</h1>
           <p>LIFF init failed.</p>
-          <p><code>${error}</code></p>
+          <p><code>${error.message}</code></p>
         `;
     }
 }
 
-// ✅ GASにLINE IDと名前を送信する関数
+// ✅ GASにLINE IDと名前を送信する関数（CORS対策済み）
 async function sendToGAS(userId, displayName) {
     try {
+        console.log("GASへデータ送信中...");
         const response = await fetch(GAS_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ userId, displayName })
+            body: JSON.stringify({ userId, displayName }),
+            mode: "cors",  // ✅ CORSを明示的に許可
+            cache: "no-cache"
         });
 
-        const result = await response.text();
+        if (!response.ok) {
+            throw new Error(`HTTPエラー: ${response.status}`);
+        }
+
+        const result = await response.json();
         console.log("GASのレスポンス:", result);
+
+        // ✅ 成功した場合の表示
+        alert("LINE IDを登録しました！");
     } catch (error) {
         console.error("GAS送信エラー:", error);
+        alert("GASへの送信に失敗しました。");
     }
 }
 
