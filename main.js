@@ -62,9 +62,11 @@ async function sendToGAS(userId, displayName) {
         console.log("GASへデータ送信中...");
         const response = await fetch(GAS_URL, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { 
+                "Content-Type": "application/json"
+            },
             body: JSON.stringify({ userId, displayName }),
-            mode: "cors",  // ✅ CORSを明示的に許可
+            mode: "cors",  // ✅ 明示的にCORS許可
             cache: "no-cache"
         });
 
@@ -82,6 +84,7 @@ async function sendToGAS(userId, displayName) {
         alert("GASへの送信に失敗しました。");
     }
 }
+
 
 // ✅ 初期化関数を実行
 initializeLIFF();
