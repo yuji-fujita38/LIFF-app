@@ -14,7 +14,7 @@ function getUrlParams() {
     return Object.fromEntries(params.entries());
 }
 
-// ✅ LIFFを初期化する関数（開いたら即閉じる）
+// ✅ LIFFを初期化する関数
 async function initializeLIFF() {
     try {
         console.log("LIFFの初期化を開始...");
@@ -45,8 +45,16 @@ async function initializeLIFF() {
 
         console.log("ユーザーID:", userId);
         console.log("表示名:", displayName);
-     
-            sendToGAS(userId, displayName, userType);
+
+        // ✅ `GAS` にデータを送信
+        await sendToGAS(userId, displayName, userType);
+
+        // ✅ 送信完了後 `3秒後` に LIFFを自動で閉じる
+        setTimeout(() => {
+            console.log("⏳ 3秒経過後にLIFFアプリを閉じます...");
+            liff.closeWindow();
+        }, 3000); // 3秒後に閉じる
+
     } catch (error) {
         console.error("LIFFの初期化に失敗:", error);
     }
@@ -55,7 +63,7 @@ async function initializeLIFF() {
 // ✅ GASにLINE IDと名前を送信する関数（バックグラウンド処理）
 async function sendToGAS(userId, displayName, userType) {
     try {
-        console.log("3秒後にGASへデータ送信中...", userId, displayName, userType);
+        console.log("GASへデータ送信中...", userId, displayName, userType);
 
         const formData = new URLSearchParams();
         formData.append("userId", userId);
