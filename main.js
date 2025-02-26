@@ -66,41 +66,41 @@ async function initializeLIFF() {
 }
 
 // ✅ GASにLINE IDと名前を送信する関数（バックグラウンド処理）
+// ✅ LIFFアプリの中で5秒待ってからリクエストを送信
 async function sendToGAS(userId, displayName, userType) {
     try {
-        console.log("GASへデータ送信中...", userId, displayName, userType);
+        console.log("⏳ 5秒後にGASへデータ送信予定...", userId, displayName, userType);
 
-        // ✅ `application/x-www-form-urlencoded` にするために `URLSearchParams` を使用
-        const formData = new URLSearchParams();
-        formData.append("userId", userId);
-        formData.append("displayName", displayName);
-        formData.append("type", userType); // ✅ 顧客 or コーチ の判別情報を追加
+        setTimeout(async () => {
+            console.log("✅ GASへデータ送信開始...");
 
-        const response = await fetch(GAS_URL, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded", // ✅ プリフライト回避
-                "Accept": "application/json", // ✅ レスポンスを JSON で受け取る
-            },
-            body: formData.toString(),
-        });
+            const formData = new URLSearchParams();
+            formData.append("userId", userId);
+            formData.append("displayName", displayName);
+            formData.append("type", userType);
 
-        if (!response.ok) {
-            throw new Error(`HTTPエラー: ${response.status}`);
-        }
+            const response = await fetch(GAS_URL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "Accept": "application/json",
+                },
+                body: formData.toString(),
+            });
 
-        const result = await response.json();
-        console.log("GASのレスポンス:", result);
+            if (!response.ok) {
+                throw new Error(`HTTPエラー: ${response.status}`);
+            }
+
+            const result = await response.json();
+            console.log("GASのレスポンス:", result);
+        }, 5000); // 5秒後にリクエストを実行
 
     } catch (error) {
         console.error("GAS送信エラー:", error);
-        document.querySelector("#app").innerHTML = `
-          <h1>エラー</h1>
-          <p>GASへのデータ送信に失敗しました。</p>
-          <p><code>${error.message}</code></p>
-        `;
     }
 }
+
 
 // ✅ 初期化関数を実行
 initializeLIFF();
