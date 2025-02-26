@@ -1,9 +1,10 @@
 import './style.css';
 import liff from '@line/liff';
 
-// ✅ GASのエンドポイントURL（環境変数などで管理推奨）
+// ✅ GASのエンドポイントURL
 const GAS_URL = "https://script.google.com/macros/s/AKfycbw3RriSKdaLpYutaVJeu69OXVPb7ntCCZikVra8jkKrfLygSboBPCHeGIRYZxbFfCqa/exec";
 
+// ✅ グローバル変数（ページ閉じる前に `sendBeacon()` で利用）
 let userId = null;
 let displayName = null;
 let userType = "client"; // デフォルトは顧客
@@ -27,13 +28,13 @@ async function initializeLIFF() {
         console.log("取得したURLパラメータ:", urlParams);
 
         // ✅ URLパラメータで `type=coach` の場合はコーチ登録、それ以外はクライアント登録
-        userType = urlParams.type || "client";
+        userType = urlParams.type || "client"; 
 
         // ✅ ログインしていなければログイン処理を行う
         if (!liff.isLoggedIn()) {
             console.log("LINEログインが必要です");
             liff.login();
-            return;
+            return; // ✅ ログイン処理後に処理を止める
         }
 
         console.log("ログイン済み！ユーザー情報を取得します");
@@ -46,37 +47,52 @@ async function initializeLIFF() {
         console.log("ユーザーID:", userId);
         console.log("表示名:", displayName);
 
-        // ✅ `GAS` にデータを送信
+        // ✅ UI 更新
+        document.querySelector('#app').innerHTML = `
+          <h1>ボディメイクナビ</h1>
+          <p>ようこそ、<b>${displayName}</b> さん！</p>
+          <p>登録処理中...</p>
+          <p>登録種別: <b>${userType === "coach" ? "コーチ" : "クライアント"}</b></p>
+        `;
+
+        // ✅ システム設定のGASに送信
         await sendToGAS(userId, displayName, userType);
 
-        // ✅ 送信完了後 `3秒後` に LIFFを自動で閉じる
+        // ✅ 🔥 送信完了後に自動で閉じる
+        console.log("✅ データ送信完了！LIFFを自動で閉じます...");
         setTimeout(() => {
-            console.log("⏳ 3秒経過後にLIFFアプリを閉じます...");
             liff.closeWindow();
-        }, 3000); // 3秒後に閉じる
-
+        }, 1000); // ✅ 1秒待って閉じる（処理完了を視認させるため）
+        
     } catch (error) {
         console.error("LIFFの初期化に失敗:", error);
+        document.querySelector('#app').innerHTML = `
+          <h1>LIFFアプリ</h1>
+          <p>LIFF init failed.</p>
+          <p><code>${error.message}</code></p>
+        `;
     }
 }
 
-// ✅ GASにLINE IDと名前を送信する関数（バックグラウンド処理）
+// ✅ GASにLINE IDと名前を送信する関数（CORS対策済み）
 async function sendToGAS(userId, displayName, userType) {
     try {
         console.log("GASへデータ送信中...", userId, displayName, userType);
 
+        // ✅ `application/x-www-form-urlencoded` にするために `URLSearchParams` を使用
         const formData = new URLSearchParams();
         formData.append("userId", userId);
         formData.append("displayName", displayName);
-        formData.append("type", userType);
+        formData.append("type", userType); // ✅ 顧客 or コーチ の判別情報を追加
 
         const response = await fetch(GAS_URL, {
             method: "POST",
             headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-                "Accept": "application/json",
+                "Content-Type": "application/x-www-form-urlencoded", // ✅ プリフライト回避
+                "Accept": "application/json", // ✅ レスポンスを JSON で受け取る
             },
             body: formData.toString(),
+            keepalive: true // ✅ ページ閉じてもリクエスト継続
         });
 
         if (!response.ok) {
@@ -85,9 +101,9 @@ async function sendToGAS(userId, displayName, userType) {
 
         const result = await response.json();
         console.log("GASのレスポンス:", result);
-
     } catch (error) {
         console.error("GAS送信エラー:", error);
+        alert("GASへの送信に失敗しました。");
     }
 }
 
