@@ -10,7 +10,7 @@ function getUrlParams() {
     return Object.fromEntries(params.entries());
 }
 
-// ✅ LIFFを初期化する関数（自動で閉じずにログ確認用）
+// ✅ LIFFを初期化する関数（データ送信後にログ確認）
 async function initializeLIFF() {
     try {
         console.log("LIFFの初期化を開始...");
@@ -29,7 +29,7 @@ async function initializeLIFF() {
         if (!liff.isLoggedIn()) {
             console.log("LINEログインが必要です");
             liff.login();
-            return; // ✅ ログイン処理後に処理を止める
+            return;
         }
 
         console.log("ログイン済み！ユーザー情報を取得します");
@@ -66,41 +66,45 @@ async function initializeLIFF() {
 }
 
 // ✅ GASにLINE IDと名前を送信する関数（バックグラウンド処理）
-// ✅ LIFFアプリの中で5秒待ってからリクエストを送信
+// ✅ **5秒後にリクエストを送信し、エラーハンドリングを強化**
 async function sendToGAS(userId, displayName, userType) {
     try {
         console.log("⏳ 5秒後にGASへデータ送信予定...", userId, displayName, userType);
 
         setTimeout(async () => {
-            console.log("✅ GASへデータ送信開始...");
+            try {
+                console.log("✅ GASへデータ送信開始...");
 
-            const formData = new URLSearchParams();
-            formData.append("userId", userId);
-            formData.append("displayName", displayName);
-            formData.append("type", userType);
+                const formData = new URLSearchParams();
+                formData.append("userId", userId);
+                formData.append("displayName", displayName);
+                formData.append("type", userType);
 
-            const response = await fetch(GAS_URL, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
-                    "Accept": "application/json",
-                },
-                body: formData.toString(),
-            });
+                const response = await fetch(GAS_URL, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "Accept": "application/json",
+                    },
+                    body: formData.toString(),
+                });
 
-            if (!response.ok) {
-                throw new Error(`HTTPエラー: ${response.status}`);
+                if (!response.ok) {
+                    throw new Error(`HTTPエラー: ${response.status}`);
+                }
+
+                const result = await response.json();
+                console.log("🟢 GASのレスポンス:", result);
+
+            } catch (error) {
+                console.error("❌ GAS送信エラー:", error);
             }
-
-            const result = await response.json();
-            console.log("GASのレスポンス:", result);
         }, 5000); // 5秒後にリクエストを実行
 
     } catch (error) {
-        console.error("GAS送信エラー:", error);
+        console.error("❌ sendToGASエラー:", error);
     }
 }
-
 
 // ✅ 初期化関数を実行
 initializeLIFF();
