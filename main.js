@@ -66,43 +66,33 @@ async function initializeLIFF() {
 }
 
 // ✅ GASにLINE IDと名前を送信する関数（バックグラウンド処理）
-// ✅ **5秒後にリクエストを送信し、エラーハンドリングを強化**
 async function sendToGAS(userId, displayName, userType) {
     try {
-        console.log("⏳ 5秒後にGASへデータ送信予定...", userId, displayName, userType);
+        console.log("✅ GASへデータ送信開始...");
 
-        setTimeout(async () => {
-            try {
-                console.log("✅ GASへデータ送信開始...");
+        const formData = new URLSearchParams();
+        formData.append("userId", userId);
+        formData.append("displayName", displayName);
+        formData.append("type", userType);
 
-                const formData = new URLSearchParams();
-                formData.append("userId", userId);
-                formData.append("displayName", displayName);
-                formData.append("type", userType);
+        const response = await fetch(GAS_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "Accept": "application/json",
+            },
+            body: formData.toString(),
+        });
 
-                const response = await fetch(GAS_URL, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded",
-                        "Accept": "application/json",
-                    },
-                    body: formData.toString(),
-                });
+        if (!response.ok) {
+            throw new Error(`HTTPエラー: ${response.status}`);
+        }
 
-                if (!response.ok) {
-                    throw new Error(`HTTPエラー: ${response.status}`);
-                }
-
-                const result = await response.json();
-                console.log("🟢 GASのレスポンス:", result);
-
-            } catch (error) {
-                console.error("❌ GAS送信エラー:", error);
-            }
-        }, 5000); // 5秒後にリクエストを実行
+        const result = await response.json();
+        console.log("🟢 GASのレスポンス:", result);
 
     } catch (error) {
-        console.error("❌ sendToGASエラー:", error);
+        console.error("❌ GAS送信エラー:", error);
     }
 }
 
