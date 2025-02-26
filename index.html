@@ -3,43 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>データ登録中</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 50px;
-        }
-        .spinner {
-            border: 5px solid rgba(0, 0, 0, 0.1);
-            border-left-color: #09f;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            display: inline-block;
-            margin-top: 20px;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        #message {
-            font-size: 20px;
-            font-weight: bold;
-            margin-top: 20px;
-        }
-    </style>
+    <title>LIFFテスト</title>
 </head>
 <body>
-    <p id="message">データ登録中です。しばらくお待ちください...</p>
-    <div class="spinner"></div>
+    <h1>LIFFテスト</h1>
+    <p>ログを確認してください</p>
 
-    <script>
-        setTimeout(() => {
-            document.getElementById("message").textContent = "登録完了！この画面を閉じてください。";
-            document.querySelector(".spinner").style.display = "none";
-        }, 5000); // 5秒後に変更
-    </script>
+    <script src="index.js"></script>
 </body>
 </html>
