@@ -48,6 +48,19 @@ async function initializeLIFF() {
 
         // ✅ **開いた瞬間に閉じる**
         setTimeout(() => {
+             const userType = getUrlParams().type || "client"; 
+    const redirectUrl = (userType === "coach") 
+        ? "https://liff.line.me/2006759470-OZ0a7wX8?unique_key=GOCZ7R&ts=1740514622"
+        : "https://liff.line.me/2006759470-OZ0a7wX8?unique_key=Ve3HHH&ts=1740514466";
+
+    console.log(`✅ ${userType} 用のリダイレクト: ${redirectUrl}`);
+
+    // ✅ 新しいウィンドウで開く
+    liff.openWindow({
+        url: redirectUrl,
+        external: true, // LINE外のブラウザで開く
+    });
+            
             console.log("LIFFアプリを閉じます...");
             liff.closeWindow();
         }, 100); // 0.5秒後に閉じる（即時でもOK）
