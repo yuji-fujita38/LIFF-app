@@ -45,12 +45,6 @@ async function initializeLIFF() {
 
         console.log("ユーザーID:", userId);
         console.log("表示名:", displayName);
-
-        // ✅ **開いた瞬間に閉じる**
-        setTimeout(() => {
-            console.log("LIFFアプリを閉じます...");
-            liff.closeWindow();
-        }, 100); // 0.5秒後に閉じる（即時でもOK）
      
             sendToGAS(userId, displayName, userType);
     } catch (error) {
