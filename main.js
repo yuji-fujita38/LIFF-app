@@ -39,8 +39,12 @@ async function initializeLIFF() {
         console.log("ユーザーID:", profile.userId);
         console.log("表示名:", profile.displayName);
 
-        // ✅ **データ送信をバックグラウンドで実行**
-        await sendToGAS(profile.userId, profile.displayName, userType);
+       await sendToGAS(profile.userId, profile.displayName, userType).then(() => {
+    console.log("✅ GASデータ送信完了！");
+}).catch(err => {
+    console.error("❌ GAS送信エラー:", err);
+});
+
 
         // ✅ ユーザーに処理完了を伝える
         document.querySelector("#app").innerHTML = `
