@@ -2,7 +2,7 @@ import './style.css';
 import liff from '@line/liff';
 
 // ✅ GASのエンドポイントURL（環境変数などで管理推奨）
-const GAS_URL = "https://script.google.com/macros/s/AKfycbw3RriSKdaLpYutaVJeu69OXVPb7ntCCZikVra8jkKrfLygSboBPCHeGIRYZxbFfCqa/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbw_qZ108jgUiDIIzmaPW6vCB9oVI24qRYpyE36qNVsRdHCpwXzP9Dbz0DmdpGBwR9Mk/exec";
 
 let userId = null;
 let displayName = null;
