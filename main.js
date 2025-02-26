@@ -10,7 +10,7 @@ function getUrlParams() {
     return Object.fromEntries(params.entries());
 }
 
-// ✅ LIFFを初期化する関数（開いたら即閉じる）
+// ✅ LIFFを初期化する関数（自動で閉じずにログ確認用）
 async function initializeLIFF() {
     try {
         console.log("LIFFの初期化を開始...");
@@ -40,16 +40,28 @@ async function initializeLIFF() {
         console.log("表示名:", profile.displayName);
 
         // ✅ **データ送信をバックグラウンドで実行**
-        sendToGAS(profile.userId, profile.displayName, userType);
+        await sendToGAS(profile.userId, profile.displayName, userType);
 
-        // ✅ **開いた瞬間に閉じる**
-        setTimeout(() => {
-            console.log("LIFFアプリを閉じます...");
+        // ✅ ユーザーに処理完了を伝える
+        document.querySelector("#app").innerHTML = `
+          <h1>COMPASSナビ</h1>
+          <p>ようこそ、<b>${profile.displayName}</b> さん！</p>
+          <p>データが正常に送信されました。</p>
+          <button id="closeButton">閉じる</button>
+        `;
+
+        // ✅ 閉じるボタンのイベントリスナー
+        document.querySelector("#closeButton").addEventListener("click", () => {
             liff.closeWindow();
-        }, 500); // 0.5秒後に閉じる（即時でもOK）
-        
+        });
+
     } catch (error) {
         console.error("LIFFの初期化に失敗:", error);
+        document.querySelector("#app").innerHTML = `
+          <h1>エラー</h1>
+          <p>LIFFの初期化に失敗しました。</p>
+          <p><code>${error.message}</code></p>
+        `;
     }
 }
 
@@ -82,6 +94,11 @@ async function sendToGAS(userId, displayName, userType) {
 
     } catch (error) {
         console.error("GAS送信エラー:", error);
+        document.querySelector("#app").innerHTML = `
+          <h1>エラー</h1>
+          <p>GASへのデータ送信に失敗しました。</p>
+          <p><code>${error.message}</code></p>
+        `;
     }
 }
 
