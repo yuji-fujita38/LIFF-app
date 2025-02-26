@@ -65,26 +65,22 @@ async function initializeLIFF() {
     }
 }
 
-
-
-
-
-
-
+// ✅ GASにLINE IDと名前を送信する関数（バックグラウンド処理）
 async function sendToGAS(userId, displayName, userType) {
     try {
         console.log("GASへデータ送信中...", userId, displayName, userType);
 
+        // ✅ `application/x-www-form-urlencoded` にするために `URLSearchParams` を使用
         const formData = new URLSearchParams();
         formData.append("userId", userId);
         formData.append("displayName", displayName);
-        formData.append("type", userType);
+        formData.append("type", userType); // ✅ 顧客 or コーチ の判別情報を追加
 
         const response = await fetch(GAS_URL, {
             method: "POST",
             headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-                "Accept": "application/json",
+                "Content-Type": "application/x-www-form-urlencoded", // ✅ プリフライト回避
+                "Accept": "application/json", // ✅ レスポンスを JSON で受け取る
             },
             body: formData.toString(),
         });
@@ -96,16 +92,15 @@ async function sendToGAS(userId, displayName, userType) {
         const result = await response.json();
         console.log("GASのレスポンス:", result);
 
-        // ✅ アラートでレスポンスを表示
-        alert(result.message);
-
     } catch (error) {
         console.error("GAS送信エラー:", error);
-        alert("GASへの送信に失敗しました。");
+        document.querySelector("#app").innerHTML = `
+          <h1>エラー</h1>
+          <p>GASへのデータ送信に失敗しました。</p>
+          <p><code>${error.message}</code></p>
+        `;
     }
 }
 
-
 // ✅ 初期化関数を実行
 initializeLIFF();
-
