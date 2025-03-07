@@ -14,29 +14,18 @@ function getUrlParams() {
     return Object.fromEntries(params.entries());
 }
 
-// ✅ リダイレクトをスキップするURLリスト（coach 用 & client 用）
-const EXCLUDED_URLS = {
-    coach: [
-        "https://example.com/no-redirect-coach" // coach 用の除外URL
-    ],
-    client: [
-        "https://example.com/no-redirect-client" // client 用の除外URL
-    ]
-};
+// ✅ URLパラメータから `skipRedirect` の値を取得
+function getSkipRedirectType() {
+    const params = new URLSearchParams(window.location.search);
+    const skipRedirect = params.get("skipRedirect");
 
-// ✅ リダイレクトをスキップする `type` を取得
-function getExcludedUserType() {
-    const currentUrl = window.location.href;
-    
-    if (EXCLUDED_URLS.coach.some(url => currentUrl.includes(url))) {
-        return "coach";
-    } 
-    if (EXCLUDED_URLS.client.some(url => currentUrl.includes(url))) {
-        return "client";
+    if (skipRedirect === "coach" || skipRedirect === "client") {
+        return skipRedirect;
     }
     
-    return null; // 除外URLでない場合
+    return null; // スキップしない場合
 }
+
 
 // ✅ LIFFを初期化する関数（開いたら即閉じる）
 async function initializeLIFF() {
@@ -70,14 +59,14 @@ async function initializeLIFF() {
         console.log("ユーザーID:", userId);
         console.log("表示名:", displayName);
 
-        // ✅ **開いた瞬間に閉じる**
+       // ✅ **開いた瞬間に閉じる**
 setTimeout(() => {
-    const userTypeFromURL = getExcludedUserType();
+    const userTypeFromURL = getSkipRedirectType();
     const userType = userTypeFromURL || getUrlParams().type || "client"; 
 
-    // ✅ 除外URLに一致する場合、リダイレクトせずにデータ送信
+    // ✅ URLパラメータで `skipRedirect=coach` または `skipRedirect=client` の場合、リダイレクトせずにデータ送信
     if (userTypeFromURL) {
-        console.log(`✅ ${userTypeFromURL} の除外URLからアクセスされました。リダイレクトをスキップします。`);
+        console.log(`✅ ${userTypeFromURL} のリダイレクトスキップが指定されました。`);
         sendToGAS(userId, displayName, userTypeFromURL); // 🚀 送信処理を実行
         liff.closeWindow();
         return;
@@ -98,7 +87,8 @@ setTimeout(() => {
 
     console.log("LIFFアプリを閉じます...");
     liff.closeWindow();
-}, 100); // 0.5秒後に閉じる（即時でもOK）
+}, 100);
+ // 0.5秒後に閉じる（即時でもOK）
      
             sendToGAS(userId, displayName, userType);
     } catch (error) {
