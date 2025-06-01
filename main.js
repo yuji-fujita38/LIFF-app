@@ -1,8 +1,18 @@
 import './style.css';
 import liff from '@line/liff';
 
+/**
+ * テスト環境判定用フラグ
+ * true: 本番環境
+ * false: テスト環境
+ * 【本番にリリースしたらtrueにすること！】
+ * 【開発時は基本falseにすること！】
+ */
+const IS_PRODUCTION_FLG = false;
+
 // ✅ GASのエンドポイントURL（環境変数などで管理推奨）
-const GAS_URL = "https://script.google.com/macros/s/AKfycbw_qZ108jgUiDIIzmaPW6vCB9oVI24qRYpyE36qNVsRdHCpwXzP9Dbz0DmdpGBwR9Mk/exec";
+const GAS_URL = IS_PRODUCTION_FLG ? "https://script.google.com/macros/s/AKfycbw_qZ108jgUiDIIzmaPW6vCB9oVI24qRYpyE36qNVsRdHCpwXzP9Dbz0DmdpGBwR9Mk/exec"
+:"https://script.google.com/macros/s/AKfycby6tNJweVFSqx029FIiWMMXFQpOEZ3PXqkmJ__djLdgzXvymG-IZJAXh3ELvSVq3lgt9Q/exec";
 
 let userId = null;
 let displayName = null;
@@ -82,8 +92,13 @@ setTimeout(() => {
 
     // ✅ 通常のリダイレクト処理
     const redirectUrl = (userType === "coach") 
-        ? "https://liff.line.me/2006759470-OZ0a7wX8?unique_key=GOCZ7R&ts=1740514622"
-        : "https://liff.line.me/2006759470-OZ0a7wX8?unique_key=Ve3HHH&ts=1740514466";
+        ? "https://liff.line.me/2007474035-rBkeNA5R?unique_key=A72dog&ts=1748819867"
+        : "https://liff.line.me/2007474035-rBkeNA5R?unique_key=Y7yTCT&ts=1748819867";
+
+    // 本番のフォーム作ったら差し替える
+    // const redirectUrl = (userType === "coach") 
+    //     ? "https://liff.line.me/2007474035-rBkeNA5R?unique_key=A72dog&ts=1748819867"
+    //     : "https://liff.line.me/2007474035-rBkeNA5R?unique_key=Y7yTCT&ts=1748819867";
 
     console.log(`✅ ${userType} 用のリダイレクト: ${redirectUrl}`);
 
