@@ -19,11 +19,14 @@ function getSkipRedirectType() {
     const params = new URLSearchParams(window.location.search);
     const skipRedirect = params.get("skipRedirect");
 
-    if (skipRedirect === "coach" || skipRedirect === "client") {
+    // ✅ テスト用も含めて判定
+    if (["coach", "client", "test_coach", "test_client"].includes(skipRedirect)) {
+        if (skipRedirect === "test_coach") return "coach";
+        if (skipRedirect === "test_client") return "client";
         return skipRedirect;
     }
-    
-    return null; // スキップしない場合
+
+    return null;
 }
 
 
@@ -41,6 +44,11 @@ async function initializeLIFF() {
 
         // ✅ URLパラメータで `type=coach` の場合はコーチ登録、それ以外はクライアント登録
         userType = urlParams.type || "client";
+        
+        // ✅ テスト用パラメータを通常の挙動にマッピング
+        if (userType === "test_coach") userType = "coach";
+        if (userType === "test_client") userType = "client";
+
 
         // ✅ ログインしていなければログイン処理を行う
         if (!liff.isLoggedIn()) {
