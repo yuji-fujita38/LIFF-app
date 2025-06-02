@@ -91,14 +91,11 @@ setTimeout(() => {
     }
 
     // ✅ 通常のリダイレクト処理
-    const redirectUrl = (userType === "coach") 
-        ? "https://liff.line.me/2007474035-rBkeNA5R?unique_key=A72dog&ts=1748819867"
-        : "https://liff.line.me/2007474035-rBkeNA5R?unique_key=Y7yTCT&ts=1748819867";
-
-    // 本番のフォーム作ったら差し替える
-    // const redirectUrl = (userType === "coach") 
-    //     ? "https://liff.line.me/2007474035-rBkeNA5R?unique_key=A72dog&ts=1748819867"
-    //     : "https://liff.line.me/2007474035-rBkeNA5R?unique_key=Y7yTCT&ts=1748819867";
+    const redirectUrl = IS_PRODUCTION_FLG 
+        // 本番環境
+        ? ""
+        // テスト環境
+        : "https://liff.line.me/2007474035-rBkeNA5R?unique_key=A72dog&ts=1748873003";
 
     console.log(`✅ ${userType} 用のリダイレクト: ${redirectUrl}`);
 
