@@ -1,22 +1,18 @@
 import './style.css';
 import liff from '@line/liff';
 
-/**
- * テスト環境判定用フラグ
- * true: 本番環境
- * false: テスト環境
- * 【本番にリリースしたらtrueにすること！】
- * 【開発時は基本falseにすること！】
- */
-const IS_PRODUCTION_FLG = false;
-
-// ✅ GASのエンドポイントURL（環境変数などで管理推奨）
-const GAS_URL = IS_PRODUCTION_FLG ? "https://script.google.com/macros/s/AKfycbw_qZ108jgUiDIIzmaPW6vCB9oVI24qRYpyE36qNVsRdHCpwXzP9Dbz0DmdpGBwR9Mk/exec"
-:"https://script.google.com/macros/s/AKfycby6tNJweVFSqx029FIiWMMXFQpOEZ3PXqkmJ__djLdgzXvymG-IZJAXh3ELvSVq3lgt9Q/exec";
-
+// 各グローバル変数を定義
+let IS_PRODUCTION_FLG = true;
+let userType = "client"; // デフォルト
 let userId = null;
 let displayName = null;
-let userType = "client"; // デフォルトは顧客
+
+// ✅ GASのURLは関数にして毎回評価
+function getGASUrl() {
+  return IS_PRODUCTION_FLG
+    ? "https://script.google.com/macros/s/AKfycbw_qZ108jgUiDIIzmaPW6vCB9oVI24qRYpyE36qNVsRdHCpwXzP9Dbz0DmdpGBwR9Mk/exec"
+    : "https://script.google.com/macros/s/AKfycby6tNJweVFSqx029FIiWMMXFQpOEZ3PXqkmJ__djLdgzXvymG-IZJAXh3ELvSVq3lgt9Q/exec";
+}
 
 // ✅ URLパラメータを取得する関数
 function getUrlParams() {
@@ -52,13 +48,17 @@ async function initializeLIFF() {
         const urlParams = getUrlParams();
         console.log("取得したURLパラメータ:", urlParams);
 
-        // ✅ URLパラメータで `type=coach` の場合はコーチ登録、それ以外はクライアント登録
         userType = urlParams.type || "client";
-        
-        // ✅ テスト用パラメータを通常の挙動にマッピング
-        if (userType === "test_coach") userType = "coach";
-        if (userType === "test_client") userType = "client";
 
+        // ✅ テスト用パラメータを通常の挙動にマッピング
+        if (userType === "test_coach") {
+            userType = "coach";
+            IS_PRODUCTION_FLG = false;
+        }
+        if (userType === "test_client") {
+            userType = "client";
+            IS_PRODUCTION_FLG = false;
+        }
 
         // ✅ ログインしていなければログイン処理を行う
         if (!liff.isLoggedIn()) {
@@ -69,7 +69,7 @@ async function initializeLIFF() {
 
         console.log("ログイン済み！ユーザー情報を取得します");
 
-        // ✅ ユーザー情報を取得
+        // ✅ ユーザー情報を取得 (LINE IDとLINE名)
         const profile = await liff.getProfile();
         userId = profile.userId;
         displayName = profile.displayName;
@@ -80,7 +80,6 @@ async function initializeLIFF() {
        // ✅ **開いた瞬間に閉じる**
 setTimeout(() => {
     const userTypeFromURL = getSkipRedirectType();
-    const userType = userTypeFromURL || getUrlParams().type || "client"; 
 
     // ✅ URLパラメータで `skipRedirect=coach` または `skipRedirect=client` の場合、リダイレクトせずにデータ送信
     if (userTypeFromURL) {
@@ -93,7 +92,7 @@ setTimeout(() => {
     // ✅ 通常のリダイレクト処理
     const redirectUrl = IS_PRODUCTION_FLG 
         // 本番環境
-        ? ""
+        ? "https://liff.line.me/2006759470-OZ0a7wX8?unique_key=7SDwrl&ts=1748956494"
         // テスト環境
         : "https://liff.line.me/2007474035-rBkeNA5R?unique_key=A72dog&ts=1748873003";
 
@@ -110,7 +109,7 @@ setTimeout(() => {
 }, 100);
  // 0.5秒後に閉じる（即時でもOK）
      
-            sendToGAS(userId, displayName, userType);
+            // sendToGAS(userId, displayName, userType);
     } catch (error) {
         console.error("LIFFの初期化に失敗:", error);
     }
@@ -119,14 +118,14 @@ setTimeout(() => {
 // ✅ GASにLINE IDと名前を送信する関数（バックグラウンド処理）
 async function sendToGAS(userId, displayName, userType) {
     try {
-        console.log("3秒後にGASへデータ送信中...", userId, displayName, userType);
+        console.log("GASへデータ送信中......", userId, displayName, userType);
 
         const formData = new URLSearchParams();
         formData.append("userId", userId);
         formData.append("displayName", displayName);
         formData.append("type", userType);
 
-        const response = await fetch(GAS_URL, {
+        const response = await fetch(getGASUrl(), {
             method: "POST",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
