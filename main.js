@@ -96,7 +96,7 @@ setTimeout(() => {
         // 本番環境
         ? "https://liff.line.me/2006759470-OZ0a7wX8?unique_key=7SDwrl&ts=1748956494"
         // テスト環境
-        : "https://liff.line.me/2007474035-rBkeNA5R?unique_key=A72dog&ts=1748873003";
+        : "https://liff.line.me/2007474035-rBkeNA5R?unique_key=A72dog&ts=1749818069";
 
     console.log(`✅ ${userType} 用のリダイレクト: ${redirectUrl}`);
 
