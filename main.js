@@ -10,8 +10,10 @@ let displayName = null;
 // ✅ GASのURLは関数にして毎回評価
 function getGASUrl() {
   return IS_PRODUCTION_FLG
+    // 本番環境
     ? "https://script.google.com/macros/s/AKfycbw_qZ108jgUiDIIzmaPW6vCB9oVI24qRYpyE36qNVsRdHCpwXzP9Dbz0DmdpGBwR9Mk/exec"
-    : "https://script.google.com/macros/s/AKfycby6tNJweVFSqx029FIiWMMXFQpOEZ3PXqkmJ__djLdgzXvymG-IZJAXh3ELvSVq3lgt9Q/exec";
+    // テスト環境
+    : "https://script.google.com/macros/s/AKfycbzcCgNG0s2GXUzX4HS3EZNX_JaHpttSVqAwxCEQq7xpPe0EDH0ivP1SOe0_jJfnd8-OKA/exec";
 }
 
 // ✅ URLパラメータを取得する関数
