@@ -41,7 +41,7 @@ function getSkipRedirectType() {
 // ✅ LIFFを初期化する関数（開いたら即閉じる）
 async function initializeLIFF() {
     try {
-        console.log("LIFFの初期化を開始...");
+        console.log("LIFFの初期化を開始...v0.1");
         await liff.init({ liffId: "2006759470-npBm9Mxr" });
 
         console.log("LIFF初期化成功！");
