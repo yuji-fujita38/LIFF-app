@@ -81,12 +81,13 @@ async function initializeLIFF() {
 
        // ✅ **開いた瞬間に閉じる**
 setTimeout(() => {
+  (async () => {
     const userTypeFromURL = getSkipRedirectType();
 
     // ✅ URLパラメータで `skipRedirect=coach` または `skipRedirect=client` の場合、リダイレクトせずにデータ送信
     if (userTypeFromURL) {
         console.log(`✅ ${userTypeFromURL} のリダイレクトスキップが指定されました。`);
-        sendToGAS(userId, displayName, userTypeFromURL); // 🚀 送信処理を実行
+        await sendToGAS(userId, displayName, userTypeFromURL); // 🚀 送信処理を実行
         liff.closeWindow();
         return;
     }
@@ -108,10 +109,11 @@ setTimeout(() => {
 
     console.log("LIFFアプリを閉じます...");
     liff.closeWindow();
+     })();
 }, 100);
  // 0.5秒後に閉じる（即時でもOK）
      
-            sendToGAS(userId, displayName, userType);
+           // sendToGAS(userId, displayName, userType);
     } catch (error) {
         console.error("LIFFの初期化に失敗:", error);
     }
