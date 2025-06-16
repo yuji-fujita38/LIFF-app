@@ -103,7 +103,7 @@ setTimeout(() => {
     // ✅ 新しいウィンドウで開く
     liff.openWindow({
         url: redirectUrl,
-        external: true, // LINE外のブラウザで開く
+        external: false, // LINE外のブラウザで開く
     });
 
     console.log("LIFFアプリを閉じます...");
@@ -111,7 +111,7 @@ setTimeout(() => {
 }, 100);
  // 0.5秒後に閉じる（即時でもOK）
      
-            sendToGAS(userId, displayName, userType);
+            // sendToGAS(userId, displayName, userType);
     } catch (error) {
         console.error("LIFFの初期化に失敗:", error);
     }
