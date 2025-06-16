@@ -13,7 +13,7 @@ function getGASUrl() {
     // 本番環境
     ? "https://script.google.com/macros/s/AKfycbw_qZ108jgUiDIIzmaPW6vCB9oVI24qRYpyE36qNVsRdHCpwXzP9Dbz0DmdpGBwR9Mk/exec"
     // テスト環境
-    : "https://script.google.com/macros/s/AKfycbygTjvCYw1UaMwSciIW-N68DA8pePc2ZsIgVvL9Egk0Y2YRuFli-U9R_SdAmXTvkXdAsg/exec";
+    : "https://script.google.com/macros/s/AKfycbyHzxutuz1qAMzCor2rFWFVkMUZV7T31hvznsIW4TMrx87C7wFFH-YfONhE2_MRdtyhsg/exec";
 }
 
 // ✅ URLパラメータを取得する関数
