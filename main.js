@@ -103,7 +103,7 @@ setTimeout(() => {
     // ✅ 新しいウィンドウで開く
     liff.openWindow({
         url: redirectUrl,
-        external: false, // LINE外のブラウザで開く
+        external: true, // LINE外のブラウザで開く
     });
 
     console.log("LIFFアプリを閉じます...");
