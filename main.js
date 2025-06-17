@@ -106,7 +106,7 @@ async function initializeLIFF() {
             // ✅ 新しいウィンドウで開く
             liff.openWindow({
                 url: redirectUrl,
-                external: true, // LINE外のブラウザで開く
+                external: false, // LINE外のブラウザで開く
             });
         
             console.log("LIFFアプリを閉じます...");
