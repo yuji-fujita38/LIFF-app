@@ -48,11 +48,11 @@ async function initializeLIFF() {
       
         userType = urlParams.type || "client";
         // ✅ テスト用パラメータを通常の挙動にマッピング
-        if (userType === "test_coach") {
+        if (userType == "test_coach") {
             userType = "coach";
             IS_PRODUCTION_FLG = false;
         }
-        if (userType === "test_client") {
+        if (userType == "test_client") {
             userType = "client";
             IS_PRODUCTION_FLG = false;
         }
