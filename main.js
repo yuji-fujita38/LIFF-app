@@ -110,7 +110,7 @@ async function initializeLIFF() {
             });
         
             console.log("LIFFアプリを閉じます...");
-            // liff.closeWindow();
+            liff.closeWindow();
         }, 10000);
         // 0.5秒後に閉じる（即時でもOK）
      
