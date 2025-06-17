@@ -111,7 +111,7 @@ async function initializeLIFF() {
         
             console.log("LIFFアプリを閉じます...");
             // liff.closeWindow();
-        }, 100);
+        }, 10000);
         // 0.5秒後に閉じる（即時でもOK）
      
         // sendToGAS(userId, displayName, userType);
