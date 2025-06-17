@@ -112,7 +112,7 @@ async function initializeLIFF() {
             console.log("LIFFアプリを閉じます...");
             liff.closeWindow();
         }, 10000);
-        // 0.5秒後に閉じる（即時でもOK）
+        // 10000(10秒)で一旦ログ見れるようにしている→正常稼働確認後100に戻す
      
         // sendToGAS(userId, displayName, userType);
       } catch (error) {
