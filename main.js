@@ -41,17 +41,12 @@ function getSkipRedirectType() {
 // ✅ LIFFを初期化する関数（開いたら即閉じる）
 async function initializeLIFF() {
     try {
-        console.log("LIFFの初期化を開始...v0.1");
-        await liff.init({ liffId: "2006759470-npBm9Mxr" });
+        console.log("LIFFの初期化を開始...v0.2");
 
-        console.log("LIFF初期化成功！");
-
-        // ✅ `liff.init()` 完了後にURLパラメータを取得
         const urlParams = getUrlParams();
         console.log("取得したURLパラメータ:", urlParams);
-
+      
         userType = urlParams.type || "client";
-
         // ✅ テスト用パラメータを通常の挙動にマッピング
         if (userType === "test_coach") {
             userType = "coach";
@@ -61,6 +56,14 @@ async function initializeLIFF() {
             userType = "client";
             IS_PRODUCTION_FLG = false;
         }
+
+        // ✅ liffId を取得
+        const liffId = IS_PRODUCTION_FLG
+            ? "2006759470-npBm9Mxr" // 本番用
+            : "2007474035-goRlynEz"; // テスト用
+
+        await liff.init({ liffId });
+        console.log("LIFF初期化成功！");
 
         // ✅ ログインしていなければログイン処理を行う
         if (!liff.isLoggedIn()) {
@@ -79,45 +82,43 @@ async function initializeLIFF() {
         console.log("ユーザーID:", userId);
         console.log("表示名:", displayName);
 
-       // ✅ **開いた瞬間に閉じる**
-setTimeout(() => {
-  (async () => {
-    const userTypeFromURL = getSkipRedirectType();
-
-    // ✅ URLパラメータで `skipRedirect=coach` または `skipRedirect=client` の場合、リダイレクトせずにデータ送信
-    if (userTypeFromURL) {
-        console.log(`✅ ${userTypeFromURL} のリダイレクトスキップが指定されました。`);
-        await sendToGAS(userId, displayName, userTypeFromURL); // 🚀 送信処理を実行
-        liff.closeWindow();
-        return;
-    }
-
-    // ✅ 通常のリダイレクト処理
-    const redirectUrl = IS_PRODUCTION_FLG 
-        // 本番環境
-        ? "https://liff.line.me/2006759470-OZ0a7wX8?unique_key=7SDwrl&ts=1748956494"
-        // テスト環境
-        : "https://liff.line.me/2007474035-rBkeNA5R?unique_key=A72dog&ts=1750070228";
-
-    console.log(`✅ ${userType} 用のリダイレクト: ${redirectUrl}`);
-
-    // ✅ 新しいウィンドウで開く
-    liff.openWindow({
-        url: redirectUrl,
-        external: true, // LINE外のブラウザで開く
-    });
-
-    console.log("LIFFアプリを閉じます...");
-    liff.closeWindow();
-     })();
-}, 100);
- // 0.5秒後に閉じる（即時でもOK）
+       // ✅ LIFF起動直後の一部ブラウザでwindow閉じが弾かれるケースがあるため、少し遅延を入れる
+        setTimeout(async () => {
+            const userTypeFromURL = getSkipRedirectType();
+        
+            // ✅ URLパラメータで `skipRedirect=coach` または `skipRedirect=client` の場合、リダイレクトせずにデータ送信
+            if (userTypeFromURL) {
+                console.log(`✅ ${userTypeFromURL} のリダイレクトスキップが指定されました。`);
+                await sendToGAS(userId, displayName, userTypeFromURL); // 🚀 送信処理を実行
+                liff.closeWindow();
+                return;
+            }
+        
+            // ✅ 通常のリダイレクト処理
+            const redirectUrl = IS_PRODUCTION_FLG 
+                // 本番環境
+                ? "https://liff.line.me/2006759470-OZ0a7wX8?unique_key=7SDwrl&ts=1748956494"
+                // テスト環境
+                : "https://liff.line.me/2007474035-rBkeNA5R?unique_key=A72dog&ts=1750070228";
+        
+            console.log(`✅ ${userType} 用のリダイレクト: ${redirectUrl}`);
+        
+            // ✅ 新しいウィンドウで開く
+            liff.openWindow({
+                url: redirectUrl,
+                external: true, // LINE外のブラウザで開く
+            });
+        
+            console.log("LIFFアプリを閉じます...");
+            liff.closeWindow();
+        }, 100);
+        // 0.5秒後に閉じる（即時でもOK）
      
-           // sendToGAS(userId, displayName, userType);
-    } catch (error) {
-        console.error("LIFFの初期化に失敗:", error);
-    }
-}
+        // sendToGAS(userId, displayName, userType);
+      } catch (error) {
+          console.error("LIFFの初期化に失敗:", error);
+      }
+  }
 
 // ✅ GASにLINE IDと名前を送信する関数（バックグラウンド処理）
 async function sendToGAS(userId, displayName, userType) {
