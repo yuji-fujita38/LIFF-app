@@ -37,7 +37,6 @@ function getSkipRedirectType() {
     return null;
 }
 
-
 // ✅ LIFFを初期化する関数（開いたら即閉じる）
 async function initializeLIFF() {
     try {
