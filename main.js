@@ -42,7 +42,12 @@ function getSkipRedirectType() {
 async function initializeLIFF() {
     try {
         console.log("LIFFの初期化を開始...");
-        await liff.init({ liffId: "2006759470-npBm9Mxr" });
+        await liff.init({
+          liffId: IS_PRODUCTION_FLG
+            ? "2006759470-npBm9Mxr" // 本番用
+            : "2007474035-goRlynEz" // テスト用
+            });
+
 
         console.log("LIFF初期化成功！");
 
