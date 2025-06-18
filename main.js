@@ -61,6 +61,10 @@ async function initializeLIFF() {
 
         console.log("🌐 適用される LIFF ID:", currentLIFFId);
 
+       console.log("🧪 location.href:", location.href);
+       console.log("🧪 LIFF context:", liff.getContext?.() || "未取得");
+
+
         await liff.init({ liffId: currentLIFFId });
 
         console.log("✅ LIFF初期化成功！");
