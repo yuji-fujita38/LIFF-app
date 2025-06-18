@@ -39,18 +39,27 @@ function getSkipRedirectType() {
 
 // ✅ LIFFを初期化する関数（開いたら即閉じる）
 async function initializeLIFF() {
-    try {
+     try {
         console.log("LIFFの初期化を開始...");
-  
-          const currentLIFFId = IS_PRODUCTION_FLG
+
+        // ✅ URLパラメータを先に取得
+        const urlParams = getUrlParams();
+        const paramType = urlParams.type;
+
+        // ✅ テスト判定を先に行う
+        if (paramType === "test_coach" || paramType === "test_client") {
+            IS_PRODUCTION_FLG = false;
+        }
+
+        const currentLIFFId = IS_PRODUCTION_FLG
             ? "2006759470-npBm9Mxr" // 本番
             : "2007474035-goRlynEz"; // テスト
 
-          console.log("🌐 適用される LIFF ID:", currentLIFFId);
+        console.log("🌐 適用される LIFF ID:", currentLIFFId);
 
-          await liff.init({ liffId: currentLIFFId });
+        await liff.init({ liffId: currentLIFFId });
 
-          console.log("✅ LIFF初期化成功！");
+        console.log("✅ LIFF初期化成功！");
 
         // ✅ `liff.init()` 完了後にURLパラメータを取得
         const urlParams = getUrlParams();
