@@ -44,7 +44,7 @@ async function initializeLIFF() {
 
         // ✅ URLパラメータを先に取得
         const urlParams = getUrlParams();
-        const userType = urlParams.type;
+        userType = urlParams.type;
        
 
         // ✅ テスト判定を先に行う
