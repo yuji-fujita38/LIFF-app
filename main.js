@@ -42,14 +42,18 @@ function getSkipRedirectType() {
 async function initializeLIFF() {
     try {
         console.log("LIFFの初期化を開始...");
-        await liff.init({
-          liffId: IS_PRODUCTION_FLG
-            ? "2006759470-npBm9Mxr" // 本番用
-            : "2007474035-goRlynEz" // テスト用
-            });
+      
+      async function initializeLIFF() {
+        try {
+          const currentLIFFId = IS_PRODUCTION_FLG
+            ? "2006759470-npBm9Mxr" // 本番
+            : "2007474035-goRlynEz"; // テスト
 
+          console.log("🌐 適用される LIFF ID:", currentLIFFId);
 
-        console.log("LIFF初期化成功！");
+          await liff.init({ liffId: currentLIFFId });
+
+          console.log("✅ LIFF初期化成功！");
 
         // ✅ `liff.init()` 完了後にURLパラメータを取得
         const urlParams = getUrlParams();
