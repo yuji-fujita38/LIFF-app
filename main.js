@@ -44,10 +44,11 @@ async function initializeLIFF() {
 
         // ✅ URLパラメータを先に取得
         const urlParams = getUrlParams();
-        const paramType = urlParams.type;
+        const userType = urlParams.type;
+       
 
         // ✅ テスト判定を先に行う
-        if (paramType === "test_coach" || paramType === "test_client") {
+        if (userType === "test_coach" || userType === "test_client") {
             IS_PRODUCTION_FLG = false;
         }
 
@@ -62,11 +63,9 @@ async function initializeLIFF() {
         console.log("✅ LIFF初期化成功！");
 
         // ✅ `liff.init()` 完了後にURLパラメータを取得
-        const urlParams = getUrlParams();
         console.log("取得したURLパラメータ:", urlParams);
-
-        userType = urlParams.type || "client";
-
+       userType = urlParams.type || "client";
+       
         // ✅ テスト用パラメータを通常の挙動にマッピング
         if (userType === "test_coach") {
             userType = "coach";
