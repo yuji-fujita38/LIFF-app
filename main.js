@@ -42,8 +42,11 @@ async function initializeLIFF() {
      try {
         console.log("LIFFの初期化を開始...");
 
+       
+
         // ✅ URLパラメータを先に取得
         const urlParams = getUrlParams();
+       console.log("💡 現在のURLパラメータ:", urlParams); // ← ここ重要
         userType = urlParams.type;
        
 
