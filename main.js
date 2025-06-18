@@ -70,6 +70,8 @@ async function initializeLIFF() {
         }
 
         console.log("ログイン済み！ユーザー情報を取得します");
+        console.log(userType, IS_PRODUCTION_FLG); // テスト用ログ
+
 
         // ✅ ユーザー情報を取得 (LINE IDとLINE名)
         const profile = await liff.getProfile();
