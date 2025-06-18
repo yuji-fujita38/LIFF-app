@@ -92,14 +92,32 @@ setTimeout(() => {
         liff.closeWindow();
         return;
     }
+  
 
-    // ✅ 通常のリダイレクト処理
-    const redirectUrl = IS_PRODUCTION_FLG 
-        // 本番環境
-        ? "https://liff.line.me/2006759470-OZ0a7wX8?unique_key=7SDwrl&ts=1748956494"
-        // テスト環境
-        : "https://liff.line.me/2007474035-rBkeNA5R?unique_key=A72dog&ts=1749818069";
+    // // ✅ 通常のリダイレクト処理
+    // const redirectUrl = IS_PRODUCTION_FLG 
+    //     // 本番環境
+    //     ? "https://liff.line.me/2006759470-OZ0a7wX8?unique_key=7SDwrl&ts=1748956494"
+    //     // テスト環境
+    //     : "https://liff.line.me/2007474035-rBkeNA5R?unique_key=A72dog&ts=1749818069";
 
+
+
+  // ✅ 環境とユーザー種別に応じたリダイレクト処理　⚠️一時対応→本番環境にメール認証追加時に削除する⚠️
+let redirectUrl;
+
+if (!IS_PRODUCTION_FLG) {
+    // テスト環境の場合
+    redirectUrl = "https://liff.line.me/2007474035-rBkeNA5R?unique_key=A72dog&ts=1749818069";
+} else {
+    // 本番環境の場合
+    redirectUrl = (userType === "coach")
+        ? "https://liff.line.me/2006759470-OZ0a7wX8?unique_key=GOCZ7R&ts=1740514622"
+        : "https://liff.line.me/2006759470-OZ0a7wX8?unique_key=Ve3HHH&ts=1740514466";
+}
+
+
+  
     console.log(`✅ ${userType} 用のリダイレクト: ${redirectUrl}`);
 
     // ✅ 新しいウィンドウで開く
