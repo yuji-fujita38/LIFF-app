@@ -41,9 +41,7 @@ function getSkipRedirectType() {
 async function initializeLIFF() {
     try {
         console.log("LIFFの初期化を開始...");
-      
-      async function initializeLIFF() {
-        try {
+  
           const currentLIFFId = IS_PRODUCTION_FLG
             ? "2006759470-npBm9Mxr" // 本番
             : "2007474035-goRlynEz"; // テスト
